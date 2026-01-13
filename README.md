@@ -16,7 +16,7 @@ It supports bilingual content (Arabic & French) and addresses the unique challen
 ## ✨ Key Features
 
 - **🏠 Fully On-Premise Deployment**  
-  All processing is done locally — no cloud dependency for enhanced data privacy.
+  All processing is done locally , no cloud dependency for enhanced data privacy.
 
 - **🧠 Advanced OCR Extraction**  
   Accurate text extraction from images and PDFs with Arabic and French support.
