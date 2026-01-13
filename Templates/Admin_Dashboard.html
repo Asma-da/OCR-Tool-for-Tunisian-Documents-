@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+    <style>
+/* Admin Dashboard - overrides only */
+#users, #uploads {
+    color: var(--text-color);
+}
+
+#users .card, #uploads .card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+/* Tables - dark, transparent, white text */
+#usersTable, #uploadsTable {
+    background: transparent !important;
+    color: var(--text-color) !important;
+    width: 100%;
+}
+
+#usersTable th, #uploadsTable th {
+    background: rgba(232,180,211,0.2) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color);
+}
+
+#usersTable td, #uploadsTable td {
+    background: transparent !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color);
+}
+
+#usersTable tbody tr:hover, #uploadsTable tbody tr:hover {
+    background-color: var(--light-hover) !important;
+}
+
+/* Scrollable tables with fixed height */
+#usersTable_wrapper, #uploadsTable_wrapper,
+#users .table-responsive, #uploads .table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+/* Buttons in tables - match theme */
+.modify-user-btn, .delete-user-btn, .view-upload-btn {
+    color: #fff;
+    border: 1px solid var(--accent-pink);
+    background: transparent;
+}
+
+.modify-user-btn:hover, .delete-user-btn:hover, .view-upload-btn:hover {
+    background: var(--accent-pink);
+    color: #1e1b2e;
+}
+
+/* Inputs inside cards */
+#userSearch, #uploadSearch {
+    background: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+        <style>
+/* ---------- MODAL STYLING ---------- */
+.modal-content {
+    background: var(--card-bg) !important;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+#uploadDetailsBody {
+    background: var(--container-bg);
+    color: var(--text-color);
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Scrollbar in modals */
+#uploadDetailsBody::-webkit-scrollbar {
+    width: 8px;
+}
+#uploadDetailsBody::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+#uploadDetailsBody::-webkit-scrollbar-thumb {
+    background: var(--accent-pink);
+    border-radius: 4px;
+}
+
+/* Inputs in modal */
+#modifyPassword {
+    background: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Buttons in modals */
+#modifyUserForm .btn-primary, #viewUploadModal .btn-close {
+    border-radius: 8px;
+}
+
+/* ---------- CHARTS LAYOUT ---------- */
+#charts .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+#charts .col-md-4 {
+    flex: 1 1 300px; /* responsive sizing */
+}
+
+/* Move Top Users chart next to Uploads Per Day */
+#charts .col-md-4.top-users-chart {
+    order: 2;
+}
+
+/* Make charts smaller and visually appealing */
+#charts canvas {
+    height: 180px !important;
+    max-height: 180px;
+}
+
+/* Chart cards */
+#charts .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+/* ---------- GENERAL CARD / INPUTS / BUTTONS ---------- */
+.card h5, .card h6 {
+    color: var(--text-color);
+}
+
+/* Inputs inside charts & cards */
+.card input {
+    background: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+        /* ---------- MODAL STYLING ---------- */
+.modal-content {
+    background: var(--card-bg) !important;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+#uploadDetailsBody {
+    background: var(--container-bg);
+    color: var(--text-color);
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Scrollbar in modals */
+#uploadDetailsBody::-webkit-scrollbar {
+    width: 8px;
+}
+#uploadDetailsBody::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+#uploadDetailsBody::-webkit-scrollbar-thumb {
+    background: var(--accent-pink);
+    border-radius: 4px;
+}
+
+/* Inputs in modal */
+#modifyPassword {
+    background: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Buttons in modals */
+#modifyUserForm .btn-primary, #viewUploadModal .btn-close {
+    border-radius: 8px;
+}
+
+/* ---------- CHARTS LAYOUT ---------- */
+#charts .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+#charts .col-md-4 {
+    flex: 1 1 300px; /* responsive sizing */
+}
+
+/* Move Top Users chart next to Uploads Per Day */
+#charts .col-md-4.top-users-chart {
+    order: 2;
+}
+
+/* Make charts smaller and visually appealing */
+#charts canvas {
+    height: 180px !important;
+    max-height: 180px;
+}
+
+/* Chart cards */
+#charts .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+/* ---------- GENERAL CARD / INPUTS / BUTTONS ---------- */
+.card h5, .card h6 {
+    color: var(--text-color);
+}
+
+/* Inputs inside charts & cards */
+.card input {
+    background: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+
+</style>
+
+</head>
+<body>
+
+<div class="waves">
+    <div class="wave"></div>
+    <div class="wave"></div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#overview">Overview</a></li>
+                <li class="nav-item"><a class="nav-link" href="#charts">Charts</a></li>
+                <li class="nav-item"><a class="nav-link" href="#users">Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="#uploads">Uploads</a></li>
+           <li class="nav-item">
+                    <a class="nav-link btn btn-outline-danger ms-2" href="/logout" style="color:white;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid content-area">
+
+    <!-- Overview Section -->
+    <section id="overview" class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card text-center p-3">
+                    <h5 style="color:white;">Total Users</h5>
+                    <h2 style="color:white;">{{ total_users }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center p-3">
+                    <h5 style="color:white;">Total Documents</h5>
+                    <h2 style="color:white;">{{ total_docs }}</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section id="charts" class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Uploads Per Day</h6>
+                    <canvas id="uploadsPerDayChart" height="150"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Uploads by Type</h6>
+                    <canvas id="docTypePieChart" height="150"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Top Users</h6>
+                    <canvas id="topUsersChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Users Section -->
+    <section id="users" class="mb-5">
+        <div class="card p-3">
+            <h5>Users</h5>
+            <input type="text" id="userSearch" class="form-control mb-3" placeholder="Search users..." style="background: var(--input-bg); color:white; border:1px solid var(--border-color);">
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for u in users %}
+                        <tr data-username="{{ u.username }}" data-email="{{ u.email }}">
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{{ u.role }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning modify-user-btn" data-userid="{{ u._id }}">Modify</button>
+                                <button class="btn btn-sm btn-outline-danger delete-user-btn" data-userid="{{ u._id }}">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Uploads Section -->
+    <section id="uploads" class="mb-5">
+        <div class="card p-3">
+            <h5>Uploads</h5>
+            <input type="text" id="uploadSearch" class="form-control mb-3" placeholder="Search uploads..." style="background: var(--input-bg); color:white; border:1px solid var(--border-color);">
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover" id="uploadsTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Document Type</th>
+                            <th>Filename</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for u in uploads %}
+                        <tr data-id="{{ u._id }}">
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.doc_type }}</td>
+                            <td>{{ u.filename }}</td>
+                            <td>{{ u.timestamp }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info view-upload-btn" data-id="{{ u._id }}">View</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Modals (same as before) -->
+<div class="modal fade" id="modifyUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="modifyUserForm" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modify User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modifyUserId">
+                <div class="mb-3">
+                    <label>Password</label>
+                    <input type="password" id="modifyPassword" class="form-control" style="background: var(--input-bg); color:white; border:1px solid var(--border-color);">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="viewUploadModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-3" id="uploadDetailsContainer">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Main extracted content -->
+        <div id="uploadDetailsBody" style="color:white;"></div>
+
+        <!-- Verification results (optional, used by your JS) -->
+        <div id="uploadVerificationResults" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ---------------- Charts ----------------
+    const uploadsPerDay = {{ uploads_per_day | tojson }};
+    const uploadsByType = {{ uploads_by_type | tojson }};
+    const topUsers = {{ top_users | tojson }};
+
+    new Chart(document.getElementById("uploadsPerDayChart"), {
+        type: "line",
+        data: {
+            labels: uploadsPerDay.labels,
+            datasets: [{
+                label: "Uploads",
+                data: uploadsPerDay.values,
+                borderColor: "#e8b4d3",
+                backgroundColor: "rgba(232,180,211,0.3)",
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+        }
+    });
+
+    new Chart(document.getElementById("docTypePieChart"), {
+        type: "pie",
+        data: {
+            labels: uploadsByType.labels,
+            datasets: [{
+                data: uploadsByType.values,
+                backgroundColor: ["#e8b4d3","#d89bc3","#c470a1","#a85684"]
+            }]
+        },
+        options: { responsive: true }
+    });
+
+    new Chart(document.getElementById("topUsersChart"), {
+        type: "bar",
+        data: {
+            labels: topUsers.labels,
+            datasets: [{ label: "Uploads", data: topUsers.values, backgroundColor: "#e8b4d3" }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // ---------------- USERS SEARCH ----------------
+    document.getElementById("userSearch").addEventListener("input", function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll("#usersTable tbody tr").forEach(row => {
+            const username = row.dataset.username.toLowerCase();
+            const email = row.dataset.email.toLowerCase();
+            row.style.display = username.includes(query) || email.includes(query) ? "" : "none";
+        });
+    });
+
+    // ---------------- UPLOADS SEARCH ----------------
+    document.getElementById("uploadSearch").addEventListener("input", function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll("#uploadsTable tbody tr").forEach(row => {
+            const filename = row.querySelector("td:nth-child(3)").innerText.toLowerCase();
+            const username = row.querySelector("td:nth-child(1)").innerText.toLowerCase();
+            const docType = row.querySelector("td:nth-child(2)").innerText.toLowerCase();
+            row.style.display = filename.includes(query) || username.includes(query) || docType.includes(query) ? "" : "none";
+        });
+    });
+
+    // ---------------- MODIFY USER ----------------
+    const modifyUserModal = new bootstrap.Modal(document.getElementById("modifyUserModal"));
+    document.querySelectorAll(".modify-user-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.getElementById("modifyUserId").value = btn.dataset.userid;
+            modifyUserModal.show();
+        });
+    });
+    document.getElementById("modifyUserForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userId = document.getElementById("modifyUserId").value;
+        const newPassword = document.getElementById("modifyPassword").value;
+        if (!newPassword) return alert("Enter password");
+        await fetch(`/admin/users/modify/${userId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: newPassword })
+        });
+        modifyUserModal.hide();
+        alert("Password updated!");
+    });
+
+    // ---------------- DELETE USER ----------------
+    document.querySelectorAll(".delete-user-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            if (confirm("Delete this user?")) {
+                await fetch(`/admin/users/delete/${btn.dataset.userid}`, { method: "DELETE" });
+                btn.closest("tr").remove();
+            }
+        });
+    });
+
+    // ---------------- VIEW UPLOAD ----------------
+ // ---------------- VIEW UPLOAD IN ADMIN DASHBOARD ----------------
+const viewUploadModal = new bootstrap.Modal(document.getElementById("viewUploadModal"));
+
+document.querySelectorAll(".view-upload-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const res = await fetch(`/admin/uploads/${btn.dataset.id}`);
+        const data = await res.json();
+
+        const container = document.getElementById("uploadDetailsBody");
+        const verificationResults = document.getElementById('uploadVerificationResults');
+        container.innerHTML = '';
+        verificationResults.innerHTML = '';
+
+        if (!data || (!data.extracted_data && !data.extracted_text)) {
+            container.innerHTML = '<p class="text-muted">No extracted data available.</p>';
+            viewUploadModal.show();
+            return;
+        }
+
+        // Flexible handling for extracted data or text
+        let content = data.extracted_data || data.extracted_text;
+        if (typeof content === 'string') {
+            // wrap plain text into object to unify display logic
+            content = { text: content };
+        }
+
+        function displayExtractedData(data) {
+            container.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = 'extracted-content';
+
+            // If pages exist (structured PDF)
+            if (data.pages && Array.isArray(data.pages)) {
+                data.pages.forEach(page => {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.style.cssText = 'margin-bottom:2rem; border-bottom:1px dashed #ccc; padding-bottom:1rem;';
+
+                    const pageTitle = document.createElement('h5');
+                    pageTitle.textContent = `Page ${page.page_number || '?'}:`;
+                    pageTitle.style.cssText = 'margin-bottom:0.5rem; color:#e8b4d3;';
+                    pageDiv.appendChild(pageTitle);
+
+                    page.content.forEach(item => {
+                        if (item.type === 'text' && item.value) {
+                            const p = document.createElement('p');
+                            p.textContent = item.value;
+                            p.style.cssText = 'margin-bottom:1rem; white-space: pre-wrap;';
+                            pageDiv.appendChild(p);
+                        }
+                        // table and image handling same as before
+                        else if (item.type === 'table') {
+                            const table = document.createElement('table');
+                            table.className = 'table table-sm table-bordered mb-3';
+                            if (item.headers) {
+                                const thead = document.createElement('thead');
+                                const tr = document.createElement('tr');
+                                item.headers.forEach(h => {
+                                    const th = document.createElement('th');
+                                    th.textContent = h;
+                                    tr.appendChild(th);
+                                });
+                                thead.appendChild(tr);
+                                table.appendChild(thead);
+                            }
+                            if (item.rows) {
+                                const tbody = document.createElement('tbody');
+                                item.rows.forEach(row => {
+                                    const tr = document.createElement('tr');
+                                    row.forEach(cell => {
+                                        const td = document.createElement('td');
+                                        td.textContent = cell;
+                                        tr.appendChild(td);
+                                    });
+                                    tbody.appendChild(tr);
+                                });
+                                table.appendChild(tbody);
+                            }
+                            pageDiv.appendChild(table);
+                        }
+                        else if (item.type === 'image' && item.base64) {
+                            const img = document.createElement('img');
+                            img.src = item.base64;
+                            img.style.cssText = 'max-width:400px; max-height:400px; margin-bottom:1rem; border:1px solid #ddd; border-radius:4px;';
+                            pageDiv.appendChild(img);
+                        }
+                    });
+
+                    div.appendChild(pageDiv);
+                });
+            }
+            // If plain text
+            else if (data.text) {
+                const pre = document.createElement('pre');
+                pre.textContent = data.text;
+                pre.style.cssText = 'white-space: pre-wrap;';
+                div.appendChild(pre);
+            }
+            // Fallback for unknown object
+            else {
+                Object.values(data).forEach(value => {
+                    const pre = document.createElement('pre');
+                    pre.textContent = JSON.stringify(value, null, 2);
+                    div.appendChild(pre);
+                });
+            }
+
+            container.appendChild(div);
+        }
+
+        displayExtractedData(content);
+
+        // Verification display (keep existing logic)
+        if (data.verification) {
+            const results = data.verification;
+            verificationResults.innerHTML = '';
+            if (Array.isArray(results)) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning';
+                alert.innerHTML = '<strong>⚠️ Verification Error:</strong><br>' + results.join('<br>');
+                verificationResults.appendChild(alert);
+            } else if (typeof results === 'object') {
+                const scoreCard = document.createElement('div');
+                scoreCard.className = 'card mb-3';
+                scoreCard.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none;';
+                const overallScore = results.overall_score || 0;
+                const isAuthentic = results.is_authentic || false;
+                const confidenceLevel = results.confidence_level || 'low';
+                const statusIcon = isAuthentic ? '✅' : '❌';
+                const statusText = isAuthentic ? 'Authentic' : 'Not Authentic';
+                scoreCard.innerHTML = `
+                    <div class="card-body text-center p-4">
+                        <h3 class="mb-3" style="font-weight:700;">${statusIcon} ${statusText}</h3>
+                        <div style="font-size: 3.5rem; font-weight: bold; margin: 25px 0;">${overallScore}%</div>
+                        <div style="font-size: 1.2rem; opacity: 0.95; text-transform: uppercase; letter-spacing: 3px;">
+                            Confidence: ${confidenceLevel}
+                        </div>
+                    </div>
+                `;
+                verificationResults.appendChild(scoreCard);
+            }
+        }
+
+        viewUploadModal.show();
+    });
+});
+
+
+</script>
+
+</body>
+</html>
