@@ -83,6 +83,7 @@ It supports bilingual content (Arabic & French) and addresses the unique challen
 ```bash
 git clone https://github.com/your-username/tunisian-ocr-platform.git
 cd tunisian-ocr-platform
+```
 ### 2️⃣ Install dependencies
 ```bash
 pip install -r requirements.txt
