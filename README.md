@@ -49,7 +49,7 @@ It supports bilingual content (Arabic & French) and addresses the unique challen
 
 ## 🧩 Tunisian Document Specificities
 
-- Bilingual content: Arabic & French  
+- Bilingual content 
 - Right-to-left cursive Arabic script  
 - Security elements (watermarks, stamps, background patterns)  
 - Machine Readable Zone (MRZ) for passports  
